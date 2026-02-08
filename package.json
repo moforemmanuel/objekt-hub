@@ -1,0 +1,41 @@
+{
+  "name": "objekt-hub-monorepo",
+  "version": "1.0.0",
+  "description": "ObjektHub - A simple object management system with real-time sync",
+  "private": true,
+  "author": "Mofor Emmanuel",
+  "license": "ISC",
+  "scripts": {
+    "dev": "pnpm --parallel --filter \"./packages/**\" dev",
+    "dev:api": "pnpm --filter api dev",
+    "dev:web": "pnpm --filter web dev",
+    "dev:mobile": "pnpm --filter mobile start",
+    "build": "pnpm --filter api build && pnpm --filter web build",
+    "build:api": "pnpm --filter api build",
+    "build:web": "pnpm --filter web build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,mjs,cjs,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,mjs,cjs,ts,tsx,json,md}\"",
+    "type-check": "pnpm --parallel --filter \"./packages/**\" type-check",
+    "clean": "rm -rf node_modules && find packages -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "clean:build": "find packages -name 'dist' -o -name 'build' -o -name '.next' | xargs rm -rf",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.7.0",
+    "@commitlint/config-conventional": "^19.7.0",
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^9.1.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  },
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=10"
+  },
+  "packageManager": "pnpm@10.13.1"
+}
