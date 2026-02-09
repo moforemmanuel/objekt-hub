@@ -15,12 +15,8 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import { objectsApi, ApiClientError } from '@/lib/api';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function CreateObjectScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
-  const colors = Colors[colorScheme];
   const router = useRouter();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -74,68 +70,53 @@ export default function CreateObjectScreen() {
     }
   };
 
-  const inputBg = colorScheme === 'dark' ? '#1e2022' : '#f9fafb';
-
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         {/* Image Picker */}
-        <TouchableOpacity
-          style={[
-            styles.imagePicker,
-            {
-              borderColor: colors.icon,
-              backgroundColor: inputBg,
-            },
-          ]}
-          onPress={pickImage}
-          activeOpacity={0.7}
-        >
+        <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.7}>
           {imageUri ? (
             <Image source={{ uri: imageUri }} style={styles.imagePreview} contentFit="cover" />
           ) : (
             <View style={styles.imagePlaceholder}>
-              <Text style={[styles.imagePlaceholderIcon, { color: colors.icon }]}>+</Text>
-              <Text style={[styles.imagePlaceholderText, { color: colors.icon }]}>
-                Tap to select image
-              </Text>
+              <Text style={styles.imagePlaceholderIcon}>&#128247;</Text>
+              <Text style={styles.imagePlaceholderText}>Tap to select an image</Text>
             </View>
           )}
         </TouchableOpacity>
 
+        {imageUri && (
+          <TouchableOpacity style={styles.changeImageButton} onPress={pickImage}>
+            <Text style={styles.changeImageText}>Change Image</Text>
+          </TouchableOpacity>
+        )}
+
         {/* Form */}
         <View style={styles.form}>
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Title *</Text>
+            <Text style={styles.label}>Title *</Text>
             <TextInput
-              style={[
-                styles.input,
-                { color: colors.text, borderColor: colors.icon, backgroundColor: inputBg },
-              ]}
+              style={styles.input}
               value={title}
               onChangeText={setTitle}
-              placeholder="Enter title"
-              placeholderTextColor={colors.icon}
+              placeholder="Give your object a name"
+              placeholderTextColor="#9ca3af"
               maxLength={100}
               editable={!isLoading}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Description</Text>
+            <Text style={styles.label}>Description</Text>
             <TextInput
-              style={[
-                styles.input,
-                styles.textArea,
-                { color: colors.text, borderColor: colors.icon, backgroundColor: inputBg },
-              ]}
+              style={[styles.input, styles.textArea]}
               value={description}
               onChangeText={setDescription}
-              placeholder="Enter description (optional)"
-              placeholderTextColor={colors.icon}
+              placeholder="Add a description (optional)"
+              placeholderTextColor="#9ca3af"
               maxLength={500}
               multiline
               numberOfLines={4}
@@ -145,7 +126,7 @@ export default function CreateObjectScreen() {
           </View>
 
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.tint }]}
+            style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleCreate}
             disabled={isLoading}
             activeOpacity={0.8}
@@ -165,18 +146,21 @@ export default function CreateObjectScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   scrollContent: {
-    padding: 16,
+    padding: 20,
   },
   imagePicker: {
     width: '100%',
-    aspectRatio: 16 / 9,
-    borderRadius: 12,
+    aspectRatio: 4 / 3,
+    borderRadius: 14,
     borderWidth: 2,
     borderStyle: 'dashed',
+    borderColor: '#d1d5db',
+    backgroundColor: '#f9fafb',
     overflow: 'hidden',
-    marginBottom: 20,
+    marginBottom: 12,
   },
   imagePreview: {
     width: '100%',
@@ -186,14 +170,23 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
   imagePlaceholderIcon: {
     fontSize: 40,
-    fontWeight: '300',
-    marginBottom: 4,
   },
   imagePlaceholderText: {
+    fontSize: 15,
+    color: '#9ca3af',
+  },
+  changeImageButton: {
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  changeImageText: {
     fontSize: 14,
+    fontWeight: '500',
+    color: '#0a7ea4',
   },
   form: {
     gap: 16,
@@ -204,21 +197,29 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
+    color: '#374151',
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
+    borderColor: '#e5e7eb',
+    borderRadius: 10,
+    padding: 14,
     fontSize: 16,
+    color: '#111827',
+    backgroundColor: '#f9fafb',
   },
   textArea: {
     minHeight: 100,
   },
   button: {
-    borderRadius: 8,
-    padding: 14,
+    borderRadius: 10,
+    padding: 15,
     alignItems: 'center',
+    backgroundColor: '#0a7ea4',
     marginTop: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: '#fff',

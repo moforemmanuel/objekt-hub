@@ -12,13 +12,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuthStore } from '@/stores/auth';
 import { usersApi, ApiClientError } from '@/lib/api';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import dayjs from 'dayjs';
 
 export default function ProfileScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
-  const colors = Colors[colorScheme];
   const { user, setAuth, clearAuth } = useAuthStore();
   const [username, setUsername] = useState(user?.username || '');
   const [isLoading, setIsLoading] = useState(false);
@@ -71,46 +67,34 @@ export default function ProfileScreen() {
   if (!user) return null;
 
   const initials = user.username.slice(0, 2).toUpperCase();
-  const inputBg = colorScheme === 'dark' ? '#1e2022' : '#f9fafb';
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
+          <Text style={styles.headerTitle}>Profile</Text>
         </View>
 
         {/* Avatar */}
         <View style={styles.avatarSection}>
-          <View style={[styles.avatar, { backgroundColor: colors.tint }]}>
+          <View style={styles.avatar}>
             <Text style={styles.avatarText}>{initials}</Text>
           </View>
-          <Text style={[styles.displayName, { color: colors.text }]}>{user.username}</Text>
-          <Text style={[styles.memberSince, { color: colors.icon }]}>
+          <Text style={styles.displayName}>{user.username}</Text>
+          <Text style={styles.memberSince}>
             Member since {dayjs(user.createdAt).format('MMMM D, YYYY')}
           </Text>
         </View>
 
         {/* Edit Form */}
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: colorScheme === 'dark' ? '#1e2022' : '#fff',
-              borderColor: colorScheme === 'dark' ? '#2e3032' : '#e5e7eb',
-            },
-          ]}
-        >
-          <Text style={[styles.cardTitle, { color: colors.text }]}>Account Settings</Text>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Account Settings</Text>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Username</Text>
+            <Text style={styles.label}>Username</Text>
             <TextInput
-              style={[
-                styles.input,
-                { color: colors.text, borderColor: colors.icon, backgroundColor: inputBg },
-              ]}
+              style={styles.input}
               value={username}
               onChangeText={setUsername}
               autoCapitalize="none"
@@ -120,7 +104,7 @@ export default function ProfileScreen() {
           </View>
 
           <TouchableOpacity
-            style={[styles.saveButton, { backgroundColor: colors.tint }]}
+            style={[styles.saveButton, isLoading && styles.saveButtonDisabled]}
             onPress={handleSave}
             disabled={isLoading}
             activeOpacity={0.8}
@@ -145,9 +129,10 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f8f9fa',
   },
   scrollContent: {
-    padding: 16,
+    padding: 20,
   },
   header: {
     marginBottom: 24,
@@ -155,15 +140,17 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
+    color: '#111827',
   },
   avatarSection: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 28,
   },
   avatar: {
     width: 80,
     height: 80,
     borderRadius: 40,
+    backgroundColor: '#0a7ea4',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
@@ -176,20 +163,28 @@ const styles = StyleSheet.create({
   displayName: {
     fontSize: 20,
     fontWeight: '600',
+    color: '#111827',
     marginBottom: 4,
   },
   memberSince: {
     fontSize: 14,
+    color: '#9ca3af',
   },
   card: {
-    borderRadius: 12,
-    borderWidth: 1,
-    padding: 16,
+    borderRadius: 14,
+    backgroundColor: '#fff',
+    padding: 20,
     gap: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
+    color: '#111827',
   },
   inputGroup: {
     gap: 6,
@@ -197,17 +192,25 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
+    color: '#374151',
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
+    borderColor: '#e5e7eb',
+    borderRadius: 10,
+    padding: 14,
     fontSize: 16,
+    color: '#111827',
+    backgroundColor: '#f9fafb',
   },
   saveButton: {
-    borderRadius: 8,
-    padding: 14,
+    borderRadius: 10,
+    padding: 15,
     alignItems: 'center',
+    backgroundColor: '#0a7ea4',
+  },
+  saveButtonDisabled: {
+    opacity: 0.7,
   },
   saveButtonText: {
     color: '#fff',
@@ -216,10 +219,11 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     marginTop: 24,
-    padding: 14,
-    borderRadius: 8,
+    padding: 15,
+    borderRadius: 10,
+    backgroundColor: '#fff',
     borderWidth: 1,
-    borderColor: '#ef4444',
+    borderColor: '#fecaca',
     alignItems: 'center',
   },
   logoutText: {

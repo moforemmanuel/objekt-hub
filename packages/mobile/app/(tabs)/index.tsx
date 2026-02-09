@@ -16,16 +16,12 @@ import { useObjectsStore } from '@/stores/objects';
 import { objectsApi, ApiClientError } from '@/lib/api';
 import type { ObjectItem } from '@/lib/api';
 import { useSocket } from '@/hooks/useSocket';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
 
 export default function HomeScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
-  const colors = Colors[colorScheme];
   const router = useRouter();
   const { objects, pagination, isLoading, setObjects, setLoading, setError } = useObjectsStore();
   const [searchQuery, setSearchQuery] = useState('');
@@ -79,39 +75,29 @@ export default function HomeScreen() {
 
   const renderItem = ({ item }: { item: ObjectItem }) => (
     <TouchableOpacity
-      style={[
-        styles.card,
-        {
-          backgroundColor: colorScheme === 'dark' ? '#1e2022' : '#fff',
-          borderColor: colorScheme === 'dark' ? '#2e3032' : '#e5e7eb',
-        },
-      ]}
+      style={styles.card}
       onPress={() => router.push(`/objects/${item.id}`)}
       activeOpacity={0.7}
     >
       <Image source={{ uri: item.imageUrl }} style={styles.cardImage} contentFit="cover" />
       <View style={styles.cardContent}>
-        <Text style={[styles.cardTitle, { color: colors.text }]} numberOfLines={1}>
+        <Text style={styles.cardTitle} numberOfLines={1}>
           {item.title}
         </Text>
         {item.description ? (
-          <Text style={[styles.cardDescription, { color: colors.icon }]} numberOfLines={2}>
+          <Text style={styles.cardDescription} numberOfLines={2}>
             {item.description}
           </Text>
         ) : null}
         <View style={styles.cardFooter}>
-          <View style={[styles.avatar, { backgroundColor: colors.tint }]}>
+          <View style={styles.avatar}>
             <Text style={styles.avatarText}>
               {item.createdBy.username.slice(0, 2).toUpperCase()}
             </Text>
           </View>
           <View style={styles.cardMeta}>
-            <Text style={[styles.cardUsername, { color: colors.icon }]}>
-              {item.createdBy.username}
-            </Text>
-            <Text style={[styles.cardDate, { color: colors.icon }]}>
-              {dayjs(item.createdAt).fromNow()}
-            </Text>
+            <Text style={styles.cardUsername}>{item.createdBy.username}</Text>
+            <Text style={styles.cardDate}>{dayjs(item.createdAt).fromNow()}</Text>
           </View>
         </View>
       </View>
@@ -121,30 +107,40 @@ export default function HomeScreen() {
   const objectsList = objects || [];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>ObjektHub</Text>
+        <Text style={styles.headerTitle}>ObjektHub</Text>
+        <Text style={styles.headerSubtitle}>
+          {pagination ? `${pagination.total} objects` : ''}
+        </Text>
       </View>
 
       {/* Search */}
       <View style={styles.searchContainer}>
-        <TextInput
-          style={[
-            styles.searchInput,
-            {
-              color: colors.text,
-              borderColor: colors.icon,
-              backgroundColor: colorScheme === 'dark' ? '#1e2022' : '#f9fafb',
-            },
-          ]}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search objects..."
-          placeholderTextColor={colors.icon}
-          onSubmitEditing={handleSearch}
-          returnKeyType="search"
-        />
+        <View style={styles.searchInputWrapper}>
+          <Text style={styles.searchIcon}>&#128269;</Text>
+          <TextInput
+            style={styles.searchInput}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            placeholder="Search objects..."
+            placeholderTextColor="#9ca3af"
+            onSubmitEditing={handleSearch}
+            returnKeyType="search"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                setSearchQuery('');
+                setCurrentPage(1);
+                loadObjects(1);
+              }}
+            >
+              <Text style={styles.clearIcon}>&#10005;</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Objects List */}
@@ -156,29 +152,31 @@ export default function HomeScreen() {
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContent}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.tint} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0a7ea4" />
         }
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
         ListEmptyComponent={
           !isLoading ? (
             <View style={styles.emptyState}>
-              <Text style={[styles.emptyText, { color: colors.icon }]}>
-                No objects found. Create one!
+              <Text style={styles.emptyIcon}>&#128230;</Text>
+              <Text style={styles.emptyTitle}>No objects yet</Text>
+              <Text style={styles.emptyText}>
+                Tap the + button to create your first object
               </Text>
             </View>
           ) : null
         }
         ListFooterComponent={
           isLoading && objectsList.length > 0 ? (
-            <ActivityIndicator style={styles.loader} color={colors.tint} />
+            <ActivityIndicator style={styles.loader} color="#0a7ea4" />
           ) : null
         }
       />
 
       {/* FAB */}
       <TouchableOpacity
-        style={[styles.fab, { backgroundColor: colors.tint }]}
+        style={styles.fab}
         onPress={() => router.push('/objects/create')}
         activeOpacity={0.8}
       >
@@ -188,7 +186,7 @@ export default function HomeScreen() {
       {/* Initial loading */}
       {isLoading && objectsList.length === 0 ? (
         <View style={styles.loadingOverlay}>
-          <ActivityIndicator size="large" color={colors.tint} />
+          <ActivityIndicator size="large" color="#0a7ea4" />
         </View>
       ) : null}
     </SafeAreaView>
@@ -198,38 +196,74 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f8f9fa',
   },
   header: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
   },
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
+    color: '#111827',
+  },
+  headerSubtitle: {
+    fontSize: 13,
+    color: '#9ca3af',
+    fontWeight: '500',
   },
   searchContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+  },
+  searchInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    paddingHorizontal: 12,
+  },
+  searchIcon: {
+    fontSize: 16,
+    marginRight: 8,
+    color: '#9ca3af',
   },
   searchInput: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 10,
+    flex: 1,
+    paddingVertical: 12,
     fontSize: 15,
+    color: '#111827',
+  },
+  clearIcon: {
+    fontSize: 14,
+    color: '#9ca3af',
+    padding: 4,
   },
   listContent: {
     paddingHorizontal: 12,
-    paddingBottom: 80,
+    paddingBottom: 100,
   },
   row: {
     justifyContent: 'space-between',
+    paddingHorizontal: 4,
   },
   card: {
-    width: '48.5%',
-    borderRadius: 12,
-    borderWidth: 1,
+    width: '48%',
+    borderRadius: 14,
+    backgroundColor: '#fff',
     marginBottom: 12,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 2,
   },
   cardImage: {
     width: '100%',
@@ -241,11 +275,14 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 14,
     fontWeight: '600',
+    color: '#111827',
     marginBottom: 2,
   },
   cardDescription: {
     fontSize: 12,
+    color: '#6b7280',
     marginBottom: 8,
+    lineHeight: 16,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -257,6 +294,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
+    backgroundColor: '#0a7ea4',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -271,18 +309,31 @@ const styles = StyleSheet.create({
   cardUsername: {
     fontSize: 11,
     fontWeight: '500',
+    color: '#374151',
   },
   cardDate: {
     fontSize: 10,
+    color: '#9ca3af',
   },
   emptyState: {
-    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop: 80,
+    gap: 8,
+  },
+  emptyIcon: {
+    fontSize: 48,
+    marginBottom: 4,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#374151',
   },
   emptyText: {
-    fontSize: 16,
+    fontSize: 14,
+    color: '#9ca3af',
+    textAlign: 'center',
   },
   loader: {
     paddingVertical: 16,
@@ -291,7 +342,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0,0,0,0.05)',
+    backgroundColor: 'rgba(248,249,250,0.8)',
   },
   fab: {
     position: 'absolute',
@@ -299,14 +350,15 @@ const styles = StyleSheet.create({
     right: 20,
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: 16,
+    backgroundColor: '#0a7ea4',
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
+    shadowColor: '#0a7ea4',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
   fabText: {
     color: '#fff',
