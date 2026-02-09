@@ -18,8 +18,9 @@ RUN corepack enable pnpm && \
 FROM base AS builder
 WORKDIR /monorepo
 
-# Copy dependencies
+# Copy dependencies (both root and package-specific)
 COPY --from=deps /monorepo/node_modules ./node_modules
+COPY --from=deps /monorepo/packages/api/node_modules ./packages/api/node_modules
 
 # Copy source files
 COPY packages/api ./packages/api
