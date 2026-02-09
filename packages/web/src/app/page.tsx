@@ -106,7 +106,7 @@ export default function Home() {
                 placeholder="Search objects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 focus-visible:ring-0"
               />
             </div>
             <Button type="submit">Search</Button>
@@ -137,7 +137,7 @@ export default function Home() {
               {objectsList.map((object) => (
                 <Card
                   key={object.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow"
+                  className="cursor-pointer hover:shadow-lg transition-shadow pt-0 gap-2"
                   onClick={() => router.push(`/objects/${object.id}`)}
                 >
                   <CardHeader className="p-0">
@@ -149,7 +149,7 @@ export default function Home() {
                       />
                     </div>
                   </CardHeader>
-                  <CardContent className="p-4">
+                  <CardContent className="px-4 py-2">
                     <h3 className="font-semibold text-lg mb-1 truncate">{object.title}</h3>
                     {object.description && (
                       <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
@@ -157,8 +157,8 @@ export default function Home() {
                       </p>
                     )}
                   </CardContent>
-                  <CardFooter className="p-4 pt-0 flex items-center gap-2">
-                    <Avatar className="w-6 h-6">
+                  <CardFooter className="px-4 py-0 flex items-center gap-2">
+                    <Avatar className="size-8">
                       <AvatarFallback className="text-xs">
                         {getInitials(object.createdBy.username)}
                       </AvatarFallback>
