@@ -32,6 +32,16 @@ COPY packages/api ./packages/api
 WORKDIR /monorepo/packages/api
 RUN corepack enable pnpm && pnpm run build
 
+# Production dependencies only
+FROM base AS prod-deps
+WORKDIR /monorepo
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY packages/api/package.json ./packages/api/
+
+RUN corepack enable pnpm && \
+    pnpm install --frozen-lockfile --prod --filter ./packages/api...
+
 # Production stage
 FROM base AS runner
 WORKDIR /app
@@ -46,8 +56,8 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nestjs:nodejs \
   /monorepo/packages/api/dist ./dist
 
-COPY --from=builder --chown=nestjs:nodejs \
-  /monorepo/packages/api/node_modules ./node_modules
+COPY --from=prod-deps --chown=nestjs:nodejs \
+  /monorepo/node_modules ./node_modules
 
 COPY --from=builder --chown=nestjs:nodejs \
   /monorepo/packages/api/package.json ./
