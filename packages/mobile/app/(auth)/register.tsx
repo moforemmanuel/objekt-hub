@@ -13,12 +13,8 @@ import {
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { authApi, ApiClientError } from '@/lib/api';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function RegisterScreen() {
-  const colorScheme = useColorScheme() ?? 'light';
-  const colors = Colors[colorScheme];
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -65,31 +61,27 @@ export default function RegisterScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: colors.background }]}
+      style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <View style={styles.header}>
-          <Text style={[styles.title, { color: colors.text }]}>ObjektHub</Text>
-          <Text style={[styles.subtitle, { color: colors.icon }]}>Create a new account</Text>
+          <View style={styles.logoContainer}>
+            <Text style={styles.logoText}>O</Text>
+          </View>
+          <Text style={styles.title}>ObjektHub</Text>
+          <Text style={styles.subtitle}>Create a new account</Text>
         </View>
 
         <View style={styles.form}>
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Username</Text>
+            <Text style={styles.label}>Username</Text>
             <TextInput
-              style={[
-                styles.input,
-                {
-                  color: colors.text,
-                  borderColor: colors.icon,
-                  backgroundColor: colorScheme === 'dark' ? '#1e2022' : '#f9fafb',
-                },
-              ]}
+              style={styles.input}
               value={username}
               onChangeText={setUsername}
               placeholder="Choose a username"
-              placeholderTextColor={colors.icon}
+              placeholderTextColor="#9ca3af"
               autoCapitalize="none"
               autoCorrect={false}
               editable={!isLoading}
@@ -97,47 +89,33 @@ export default function RegisterScreen() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Password</Text>
+            <Text style={styles.label}>Password</Text>
             <TextInput
-              style={[
-                styles.input,
-                {
-                  color: colors.text,
-                  borderColor: colors.icon,
-                  backgroundColor: colorScheme === 'dark' ? '#1e2022' : '#f9fafb',
-                },
-              ]}
+              style={styles.input}
               value={password}
               onChangeText={setPassword}
               placeholder="Min. 6 characters"
-              placeholderTextColor={colors.icon}
+              placeholderTextColor="#9ca3af"
               secureTextEntry
               editable={!isLoading}
             />
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>Confirm Password</Text>
+            <Text style={styles.label}>Confirm Password</Text>
             <TextInput
-              style={[
-                styles.input,
-                {
-                  color: colors.text,
-                  borderColor: colors.icon,
-                  backgroundColor: colorScheme === 'dark' ? '#1e2022' : '#f9fafb',
-                },
-              ]}
+              style={styles.input}
               value={confirmPassword}
               onChangeText={setConfirmPassword}
               placeholder="Repeat password"
-              placeholderTextColor={colors.icon}
+              placeholderTextColor="#9ca3af"
               secureTextEntry
               editable={!isLoading}
             />
           </View>
 
           <TouchableOpacity
-            style={[styles.button, { backgroundColor: colors.tint }]}
+            style={[styles.button, isLoading && styles.buttonDisabled]}
             onPress={handleRegister}
             disabled={isLoading}
             activeOpacity={0.8}
@@ -150,12 +128,10 @@ export default function RegisterScreen() {
           </TouchableOpacity>
 
           <View style={styles.footer}>
-            <Text style={[styles.footerText, { color: colors.icon }]}>
-              Already have an account?{' '}
-            </Text>
+            <Text style={styles.footerText}>Already have an account? </Text>
             <Link href="/(auth)/login" asChild>
               <TouchableOpacity>
-                <Text style={[styles.linkText, { color: colors.tint }]}>Sign In</Text>
+                <Text style={styles.linkText}>Sign In</Text>
               </TouchableOpacity>
             </Link>
           </View>
@@ -168,6 +144,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   scrollContent: {
     flexGrow: 1,
@@ -178,13 +155,29 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 40,
   },
-  title: {
-    fontSize: 32,
+  logoContainer: {
+    width: 64,
+    height: 64,
+    borderRadius: 16,
+    backgroundColor: '#0a7ea4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  logoText: {
+    color: '#fff',
+    fontSize: 28,
     fontWeight: '700',
-    marginBottom: 8,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: 15,
+    color: '#6b7280',
   },
   form: {
     gap: 16,
@@ -195,18 +188,26 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
+    color: '#374151',
   },
   input: {
     borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
+    borderColor: '#e5e7eb',
+    borderRadius: 10,
+    padding: 14,
     fontSize: 16,
+    color: '#111827',
+    backgroundColor: '#f9fafb',
   },
   button: {
-    borderRadius: 8,
-    padding: 14,
+    borderRadius: 10,
+    padding: 15,
     alignItems: 'center',
+    backgroundColor: '#0a7ea4',
     marginTop: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: '#fff',
@@ -216,13 +217,15 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 16,
+    marginTop: 20,
   },
   footerText: {
     fontSize: 14,
+    color: '#6b7280',
   },
   linkText: {
     fontSize: 14,
     fontWeight: '600',
+    color: '#0a7ea4',
   },
 });
