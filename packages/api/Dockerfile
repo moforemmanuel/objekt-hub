@@ -7,22 +7,26 @@ RUN apk add --no-cache libc6-compat
 FROM base AS deps
 WORKDIR /monorepo
 
-# Copy only what pnpm needs to resolve the workspace
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY packages/api/package.json packages/api/package.json
+# Copy monorepo config files
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 
+# Copy package.json files for all packages
+COPY packages/api/package.json ./packages/api/
+
+# Install dependencies for the entire workspace (including root)
 RUN corepack enable pnpm && \
-    pnpm install --frozen-lockfile --filter ./packages/api...
+    pnpm install --frozen-lockfile
 
 # Build stage
 FROM base AS builder
 WORKDIR /monorepo
 
-# Copy dependencies (both root and package-specific)
+# Copy all dependencies
 COPY --from=deps /monorepo/node_modules ./node_modules
 COPY --from=deps /monorepo/packages/api/node_modules ./packages/api/node_modules
 
-# Copy source files
+# Copy monorepo config and source files
+COPY package.json pnpm-workspace.yaml ./
 COPY packages/api ./packages/api
 
 WORKDIR /monorepo/packages/api
