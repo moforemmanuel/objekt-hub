@@ -95,9 +95,7 @@ export default function ObjectDetailScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>{object.title}</Text>
 
-        {object.description ? (
-          <Text style={styles.description}>{object.description}</Text>
-        ) : null}
+        {object.description ? <Text style={styles.description}>{object.description}</Text> : null}
 
         {/* Creator info */}
         <View style={styles.creatorCard}>

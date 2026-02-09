@@ -111,9 +111,7 @@ export default function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.headerTitle}>ObjektHub</Text>
-        <Text style={styles.headerSubtitle}>
-          {pagination ? `${pagination.total} objects` : ''}
-        </Text>
+        <Text style={styles.headerSubtitle}>{pagination ? `${pagination.total} objects` : ''}</Text>
       </View>
 
       {/* Search */}
@@ -161,9 +159,7 @@ export default function HomeScreen() {
             <View style={styles.emptyState}>
               <Text style={styles.emptyIcon}>&#128230;</Text>
               <Text style={styles.emptyTitle}>No objects yet</Text>
-              <Text style={styles.emptyText}>
-                Tap the + button to create your first object
-              </Text>
+              <Text style={styles.emptyText}>Tap the + button to create your first object</Text>
             </View>
           ) : null
         }
