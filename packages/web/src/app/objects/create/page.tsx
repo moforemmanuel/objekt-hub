@@ -169,6 +169,7 @@ export default function CreateObjectPage() {
                   id="title"
                   type="text"
                   placeholder="Enter a title for your object"
+                  className="focus-visible:ring-0"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
@@ -183,6 +184,7 @@ export default function CreateObjectPage() {
                 <Textarea
                   id="description"
                   placeholder="Describe your object..."
+                  className="focus-visible:ring-0"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   disabled={isLoading}

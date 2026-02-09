@@ -102,6 +102,7 @@ export default function ProfilePage() {
                 <Input
                   id="username"
                   type="text"
+                  className="focus-visible:ring-0"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required

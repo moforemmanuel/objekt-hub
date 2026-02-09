@@ -62,6 +62,7 @@ export default function LoginPage() {
                 id="username"
                 type="text"
                 placeholder="johndoe"
+                className="focus-visible:ring-0"
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 required
@@ -74,6 +75,7 @@ export default function LoginPage() {
                 id="password"
                 type="password"
                 placeholder="••••••••"
+                className="focus-visible:ring-0"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 required
@@ -81,13 +83,13 @@ export default function LoginPage() {
               />
             </div>
           </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
+          <CardFooter className="flex flex-col space-y-4 mt-4 md:mt-8">
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? 'Signing in...' : 'Sign in'}
             </Button>
             <p className="text-sm text-center text-gray-600 dark:text-gray-400">
               Don&apos;t have an account?{' '}
-              <Link href="/auth/register" className="text-primary hover:underline">
+              <Link href="/auth/register" className="hover:underline">
                 Sign up
               </Link>
             </p>
