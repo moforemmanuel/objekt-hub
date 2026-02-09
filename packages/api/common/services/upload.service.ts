@@ -13,10 +13,12 @@ export class UploadService {
   private readonly s3Client: S3Client;
   private readonly bucketName: string;
   private readonly endpoint: string;
+  private readonly cdnUrl: string;
 
   constructor(private readonly configService: ConfigService) {
     this.bucketName = this.configService.getOrThrow<string>('S3_BUCKET');
     this.endpoint = this.configService.getOrThrow<string>('S3_ENDPOINT');
+    this.cdnUrl = this.configService.get<string>('CDN_URL') || this.endpoint;
 
     this.s3Client = new S3Client({
       region: this.configService.getOrThrow<string>('S3_REGION'),
@@ -51,8 +53,11 @@ export class UploadService {
 
       await this.s3Client.send(command);
 
-      // Construct public URL
-      const publicUrl = `${this.endpoint}/${this.bucketName}/${key}`;
+      // Use CDN URL if configured, otherwise fall back to direct S3 URL
+      const publicUrl =
+        this.cdnUrl !== this.endpoint
+          ? `${this.cdnUrl}/${key}`
+          : `${this.endpoint}/${this.bucketName}/${key}`;
 
       this.logger.log(`File uploaded successfully: ${publicUrl}`);
       return publicUrl;
@@ -67,12 +72,14 @@ export class UploadService {
    */
   async deleteFile(fileUrl: string): Promise<void> {
     try {
-      // Extract key from URL
-      const urlParts = fileUrl.split(`${this.bucketName}/`);
-      if (urlParts.length < 2) {
-        throw new Error('Invalid file URL');
+      // Extract key from URL (works for both CDN and direct B2 URLs)
+      const url = new URL(fileUrl);
+      let key = url.pathname.slice(1); // Remove leading slash
+
+      // If using direct B2 URL, strip the bucket name prefix
+      if (key.startsWith(`${this.bucketName}/`)) {
+        key = key.slice(this.bucketName.length + 1);
       }
-      const key = urlParts[1];
 
       const command = new DeleteObjectCommand({
         Bucket: this.bucketName,
