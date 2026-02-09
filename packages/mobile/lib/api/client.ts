@@ -1,4 +1,4 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL
   ? `${process.env.EXPO_PUBLIC_API_URL}/api/v1`
@@ -33,7 +33,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     ...(fetchOptions.headers as Record<string, string>),
   };
 
-  const authToken = token || (await AsyncStorage.getItem('auth_token'));
+  const authToken = token || (await SecureStore.getItemAsync('auth_token'));
   if (authToken) {
     headers.Authorization = `Bearer ${authToken}`;
   }
@@ -86,7 +86,7 @@ export const api = {
       ...(fetchOptions.headers as Record<string, string>),
     };
 
-    const authToken = token || (await AsyncStorage.getItem('auth_token'));
+    const authToken = token || (await SecureStore.getItemAsync('auth_token'));
     if (authToken) {
       headers.Authorization = `Bearer ${authToken}`;
     }
