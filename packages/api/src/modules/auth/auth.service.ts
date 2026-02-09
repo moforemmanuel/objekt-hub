@@ -30,21 +30,14 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(registerDto.password, 10);
 
     // Create user
-    const user = await this.usersService.create({
+    await this.usersService.create({
       username: registerDto.username,
       passwordHash,
     });
 
-    // Generate token
-    const token = this.generateToken(user.id, user.username);
-
+    // Return success message only (no sensitive data)
     return {
-      user: {
-        id: user.id,
-        username: user.username,
-        createdAt: user.createdAt,
-      },
-      accessToken: token,
+      message: 'User registered successfully',
     };
   }
 

@@ -50,18 +50,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
           } else {
             errors = String(responseObj.errors);
           }
-        } else if (responseObj.error) {
-          // Single error field
-          if (
-            typeof responseObj.error === 'object' &&
-            !Array.isArray(responseObj.error)
-          ) {
-            errors = responseObj.error;
-          } else if (Array.isArray(responseObj.error)) {
-            errors = this.parseValidationErrors(responseObj.error);
-          } else {
-            errors = String(responseObj.error);
-          }
         } else {
           // Simple exception - use exception name
           errors = exceptionName;

@@ -21,13 +21,7 @@ export class AuthController {
         status: 201,
         message: 'User registered successfully',
         data: {
-          user: {
-            id: '507f1f77bcf86cd799439011',
-            username: 'johndoe',
-            createdAt: '2026-02-09T10:30:00.000Z',
-          },
-          accessToken:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1MDdmMWY3N2JjZjg2Y2Q3OTk0MzkwMTEiLCJ1c2VybmFtZSI6ImpvaG5kb2UiLCJpYXQiOjE2MzkwNDI2MDAsImV4cCI6MTYzOTY0NzQwMH0.abc123...',
+          message: 'User registered successfully',
         },
       },
     },
@@ -39,7 +33,7 @@ export class AuthController {
       example: {
         status: 409,
         message: 'Username already exists',
-        error: 'Conflict',
+        errors: 'ConflictException',
       },
     },
   })
@@ -77,7 +71,9 @@ export class AuthController {
       example: {
         status: 401,
         message: 'Invalid credentials',
-        error: 'Unauthorized',
+        errors: 'UnauthorizedException',
+        timestamp: '2026-02-09T10:30:00.000Z',
+        path: '/api/auth/login',
       },
     },
   })
