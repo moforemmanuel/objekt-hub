@@ -24,9 +24,9 @@ interface RequestOptions extends RequestInit {
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { token, ...fetchOptions } = options;
 
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...fetchOptions.headers,
+    ...(fetchOptions.headers as Record<string, string>),
   };
 
   // Add auth token if provided or from localStorage
@@ -81,8 +81,8 @@ export const api = {
   upload: async <T>(endpoint: string, formData: FormData, options?: RequestOptions): Promise<T> => {
     const { token, ...fetchOptions } = options || {};
 
-    const headers: HeadersInit = {
-      ...fetchOptions.headers,
+    const headers: Record<string, string> = {
+      ...(fetchOptions.headers as Record<string, string>),
     };
 
     // Don't set Content-Type for FormData - browser will set it with boundary
