@@ -15,9 +15,12 @@ export interface PaginationMeta {
   hasPreviousPage: boolean;
 }
 
-export interface PaginatedResponse<T> extends ApiResponse<T[]> {
+export interface PaginatedData<T> {
+  data: T[];
   pagination: PaginationMeta;
 }
+
+export type PaginatedResponse<T> = ApiResponse<PaginatedData<T>>;
 
 // User
 export interface User {
