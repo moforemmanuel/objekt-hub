@@ -105,7 +105,7 @@ export class ObjectsService {
         },
         createdAt: item.createdAt,
       })),
-      meta: {
+      pagination: {
         page,
         limit,
         total,

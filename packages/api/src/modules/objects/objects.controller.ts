@@ -129,7 +129,7 @@ export class ObjectsController {
             createdAt: '2026-02-09T10:30:00.000Z',
           },
         ],
-        meta: {
+        pagination: {
           page: 1,
           limit: 10,
           total: 50,
