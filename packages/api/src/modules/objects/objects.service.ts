@@ -53,13 +53,17 @@ export class ObjectsService {
     });
 
     const savedObject = await newObject.save();
+    await savedObject.populate('createdBy', 'username');
 
     const result = {
       id: savedObject._id.toString(),
       title: savedObject.title,
       description: savedObject.description,
       imageUrl: savedObject.imageUrl,
-      createdBy: savedObject.createdBy.toString(),
+      createdBy: {
+        id: (savedObject.createdBy as any)._id.toString(),
+        username: (savedObject.createdBy as any).username,
+      },
       createdAt: savedObject.createdAt,
     };
 
