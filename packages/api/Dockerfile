@@ -1,32 +1,31 @@
 # syntax=docker.io/docker/dockerfile:1
 
 FROM node:22.17-alpine AS base
+RUN apk add --no-cache libc6-compat
 
 # Install dependencies only when needed
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
-WORKDIR /app
+WORKDIR /monorepo
 
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
+# Copy only what pnpm needs to resolve the workspace
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/api/package.json packages/api/package.json
 
-# Enable pnpm and install dependencies
 RUN corepack enable pnpm && \
-    pnpm install --frozen-lockfile
+    pnpm install --frozen-lockfile --filter ./packages/api...
 
 # Build stage
 FROM base AS builder
-WORKDIR /app
+WORKDIR /monorepo
 
 # Copy dependencies
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /monorepo/node_modules ./node_modules
 
 # Copy source files
-COPY . .
+COPY packages/api ./packages/api
 
-# Enable pnpm and build
-RUN corepack enable pnpm && \
-    pnpm run build
+WORKDIR /monorepo/packages/api
+RUN corepack enable pnpm && pnpm run build
 
 # Production stage
 FROM base AS runner
@@ -38,16 +37,20 @@ ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nestjs
 
-# Copy built application and dependencies
-COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nestjs:nodejs /app/package.json /app/tsconfig.json ./
+# Copy only the API artifacts (built application and dependencies)
+COPY --from=builder --chown=nestjs:nodejs \
+  /monorepo/packages/api/dist ./dist
+
+COPY --from=builder --chown=nestjs:nodejs \
+  /monorepo/packages/api/node_modules ./node_modules
+
+COPY --from=builder --chown=nestjs:nodejs \
+  /monorepo/packages/api/package.json ./
 
 USER nestjs
 
 EXPOSE 8000
-
 ENV PORT=8000
-ENV HOSTNAME="0.0.0.0"
+ENV HOSTNAME=0.0.0.0
 
 CMD ["node", "dist/main.js"]
