@@ -27,6 +27,8 @@ export class CreateObjectDto {
     description: 'Image file (jpg, png, gif, max 5MB)',
     type: 'string',
     format: 'binary',
+    required: false,
   })
-  image: any;
+  @IsOptional()
+  image?: any;
 }
