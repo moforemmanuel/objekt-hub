@@ -93,11 +93,7 @@ export default function ObjectDetailScreen() {
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Image */}
-      <Image
-        source={{ uri: object.imageUrl }}
-        style={styles.image}
-        contentFit="cover"
-      />
+      <Image source={{ uri: object.imageUrl }} style={styles.image} contentFit="cover" />
 
       {/* Content */}
       <View style={styles.content}>
