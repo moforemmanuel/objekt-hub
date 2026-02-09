@@ -1,7 +1,7 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -15,8 +15,15 @@ function AuthRedirect() {
   const { isAuthenticated } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
+  const [isNavigationReady, setNavigationReady] = useState(false);
 
   useEffect(() => {
+    setNavigationReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isNavigationReady) return;
+
     const inAuthGroup = segments[0] === '(auth)';
 
     if (!isAuthenticated && !inAuthGroup) {
@@ -24,7 +31,7 @@ function AuthRedirect() {
     } else if (isAuthenticated && inAuthGroup) {
       router.replace('/(tabs)');
     }
-  }, [isAuthenticated, segments, router]);
+  }, [isAuthenticated, segments, isNavigationReady]);
 
   return null;
 }
