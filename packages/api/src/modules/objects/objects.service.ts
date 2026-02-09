@@ -7,7 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { ObjectEntity, ObjectDocument } from './schemas/object.schema';
-import { UploadService } from '~/common/services/upload.service';
+import { UploadService } from '@/common/services/upload.service';
 import { ObjectsGateway } from './objects.gateway';
 import { CreateObjectDto } from './dto/create-object.dto';
 import { QueryObjectsDto } from './dto/query-objects.dto';

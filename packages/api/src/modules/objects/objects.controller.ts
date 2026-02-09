@@ -23,9 +23,9 @@ import {
 import { ObjectsService } from './objects.service';
 import { CreateObjectDto } from './dto/create-object.dto';
 import { QueryObjectsDto } from './dto/query-objects.dto';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator';
-import { PublicRoute } from '../../../common/decorators/public-route.decorator';
-import { ResponseMessage } from '../../../common/decorators/response-message.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { PublicRoute } from '../../common/decorators/public-route.decorator';
+import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 
 @ApiTags('Objects')
 @Controller('objects')

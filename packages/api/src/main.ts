@@ -2,9 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { setupGlobalMiddleware } from '~/common/setup/global-middleware.setup';
-import { setupVersioning } from '~/common/setup/versioning.setup';
-import { setupSwagger } from '~/common/setup/swagger.setup';
+import { setupGlobalMiddleware } from '@/common/setup/global-middleware.setup';
+import { setupVersioning } from '@/common/setup/versioning.setup';
+import { setupSwagger } from '@/common/setup/swagger.setup';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');

@@ -15,8 +15,8 @@ import {
 import { UsersService } from './users.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { CurrentUser } from '../../../common/decorators/current-user.decorator';
-import { ResponseMessage } from '../../../common/decorators/response-message.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { ResponseMessage } from '../../common/decorators/response-message.decorator';
 
 @ApiTags('Users')
 @Controller('users')
