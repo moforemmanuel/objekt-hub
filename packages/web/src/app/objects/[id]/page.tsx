@@ -107,7 +107,7 @@ export default function ObjectDetailPage() {
             </CardContent>
           </Card>
         ) : object ? (
-          <Card>
+          <Card className="pt-0 gap-2">
             <CardHeader className="p-0">
               <div className="aspect-video relative overflow-hidden rounded-t-lg bg-gray-200 dark:bg-gray-800">
                 <img
